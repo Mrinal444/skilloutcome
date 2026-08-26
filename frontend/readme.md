@@ -1,24 +1,22 @@
-# Frontend
+# Skillimpact Frontend
 
-## Owner
-Frontend Team
+This version uses the uploaded Skillimpact source structure and keeps the existing trainee/admin dashboards.
 
-## Purpose
-Contains the user interface for SkillOutcome.
+## User flow
 
-## Tech Stack
+Welcome → Trainee/Admin
 
-- React
-- TypeScript
-- Tailwind CSS
+Trainee → New trainee / Existing trainee
+- New → Register
+- Existing → Trainee login
 
-## Responsibilities
+Admin → Admin login
 
-- User dashboards
-- Authentication screens
-- Data visualization
-- API integration
+There is no demo screen switcher in the UI.
 
-## Current Status
+## Run
 
-Project setup pending.
+```bash
+npm install
+npm run dev
+```
