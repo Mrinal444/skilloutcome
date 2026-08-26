@@ -1,0 +1,18 @@
+export const T = {
+  bg: "#120F0B",
+  bgElev: "#1B1712",
+  bgElev2: "#231C15",
+  border: "#332A20",
+  borderSoft: "#241D16",
+  text: "#F4EBDE",
+  textDim: "#B9AA97",
+  textFaint: "#7C7062",
+  teal: "#00C9AD",
+  tealDeep: "#0A3E37",
+  tealSoft: "#0F2C27",
+  taupe: "#96806D",
+  tan: "#CDB5A1",
+  cream: "#FFEBCD",
+  amber: "#E3A45E",
+  danger: "#D9736B",
+};
