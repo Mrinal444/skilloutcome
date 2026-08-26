@@ -1,0 +1,294 @@
+{
+	"info": {
+		"_postman_id": "skilloutcome-sih26135-collection",
+		"name": "SkillOutcome API (SIH26135)",
+		"description": "Postman collection for SkillOutcome Backend APIs including Trainee, Training, Employment, Follow-up, and Analytics modules.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Login - Admin",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@skilloutcome.gov.in\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"]}
+					}
+				},
+				{
+					"name": "Login - Trainee",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"rahul.sharma1@gmail.com\",\n    \"password\": \"trainee123\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"]}
+					}
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New User\",\n    \"email\": \"newuser@gmail.com\",\n    \"password\": \"password123\",\n    \"role\": \"TRAINEE\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Trainee Module",
+			"item": [
+				{
+					"name": "Get All Trainees (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/trainees", "host": ["{{baseUrl}}"], "path": ["trainees"]}
+					}
+				},
+				{
+					"name": "Get Trainee by ID",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/trainees/1", "host": ["{{baseUrl}}"], "path": ["trainees", "1"]}
+					}
+				},
+				{
+					"name": "Update Trainee Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"education\": \"B.Tech Computer Science\",\n    \"location\": \"Bangalore\",\n    \"experience\": 2\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/trainees/1", "host": ["{{baseUrl}}"], "path": ["trainees", "1"]}
+					}
+				},
+				{
+					"name": "Assign Skills to Trainee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skills\": [\n        {\"name\": \"Python\", \"level\": \"ADVANCED\"},\n        {\"name\": \"SQL\", \"level\": \"INTERMEDIATE\"}\n    ]\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/trainees/1/skills", "host": ["{{baseUrl}}"], "path": ["trainees", "1", "skills"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Training Module",
+			"item": [
+				{
+					"name": "Get Training Programs",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/training", "host": ["{{baseUrl}}"], "path": ["training"]}
+					}
+				},
+				{
+					"name": "Create Training Program",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Full Stack AI Engineer\",\n    \"provider\": \"NSDC Academy\",\n    \"duration\": \"6 Months\",\n    \"category\": \"Technology\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/training", "host": ["{{baseUrl}}"], "path": ["training"]}
+					}
+				},
+				{
+					"name": "Enroll Trainee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"trainee_id\": 1,\n    \"program_id\": 1\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/training/enroll", "host": ["{{baseUrl}}"], "path": ["training", "enroll"]}
+					}
+				},
+				{
+					"name": "Update Enrollment / Certification",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"COMPLETED\",\n    \"score\": 92.5\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/training/enrollment/1", "host": ["{{baseUrl}}"], "path": ["training", "enrollment", "1"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Employment Module",
+			"item": [
+				{
+					"name": "Create Employer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company_name\": \"Tech Innovators Inc\",\n    \"industry\": \"IT\",\n    \"location\": \"Bangalore\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/employers", "host": ["{{baseUrl}}"], "path": ["employers"]}
+					}
+				},
+				{
+					"name": "Add Employment Record",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"trainee_id\": 1,\n    \"employer_id\": 1,\n    \"job_role\": \"Data Analyst\",\n    \"salary\": 650000,\n    \"status\": \"EMPLOYED\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/employment", "host": ["{{baseUrl}}"], "path": ["employment"]}
+					}
+				},
+				{
+					"name": "Get Employment History",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/employment/1", "host": ["{{baseUrl}}"], "path": ["employment", "1"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Follow-up System",
+			"item": [
+				{
+					"name": "Add 30-Day Follow-up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"trainee_id\": 1,\n    \"follow_up_type\": \"DAY_30\",\n    \"status\": \"EMPLOYED\",\n    \"salary\": 650000,\n    \"feedback\": \"Successfully onboarded and performing well.\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/followups", "host": ["{{baseUrl}}"], "path": ["followups"]}
+					}
+				},
+				{
+					"name": "Add 180-Day Retention Check",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"trainee_id\": 1,\n    \"follow_up_type\": \"DAY_180\",\n    \"status\": \"EMPLOYED\",\n    \"salary\": 720000,\n    \"feedback\": \"Promoted to Senior Analyst with 10% wage hike.\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/followups", "host": ["{{baseUrl}}"], "path": ["followups"]}
+					}
+				},
+				{
+					"name": "Get Follow-up History",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/followups/1", "host": ["{{baseUrl}}"], "path": ["followups", "1"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Analytics APIs",
+			"item": [
+				{
+					"name": "Government Dashboard Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/analytics/dashboard", "host": ["{{baseUrl}}"], "path": ["analytics", "dashboard"]}
+					}
+				},
+				{
+					"name": "Provider Performance Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/analytics/providers", "host": ["{{baseUrl}}"], "path": ["analytics", "providers"]}
+					}
+				},
+				{
+					"name": "Skill Gap Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/analytics/skill-gaps", "host": ["{{baseUrl}}"], "path": ["analytics", "skill-gaps"]}
+					}
+				},
+				{
+					"name": "District-wise Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+						"url": {"raw": "{{baseUrl}}/analytics/districts", "host": ["{{baseUrl}}"], "path": ["analytics", "districts"]}
+					}
+				}
+			]
+		}
+	]
+}
