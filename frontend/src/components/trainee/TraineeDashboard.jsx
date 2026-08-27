@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { User, Target, ClipboardList, Briefcase, Award, Building2, CheckCircle2 } from "lucide-react";
 import Shell from "../common/Shell.jsx";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useI18n } from "../../i18n.jsx";
 import SectionTitle from "../common/SectionTitle.jsx";
 import SkillBar from "../common/SkillBar.jsx";
 import StatusBadge from "../common/StatusBadge.jsx";
@@ -18,7 +20,10 @@ const NAV = [
 ];
 
 export default function TraineeDashboard() {
-  const [tab, setTab] = useState("profile");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tab = location.pathname.split("/").filter(Boolean)[1] || "profile";
+  const setTab = (next) => navigate(`/trainee/${next}`);
 
   return (
     <Shell
