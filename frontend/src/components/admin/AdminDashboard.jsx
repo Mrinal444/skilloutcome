@@ -42,6 +42,7 @@ import {
   skillGaps,
   providers,
   districts,
+  traineeProfiles,
 } from "../../data/admin.js";
 import { useI18n } from "../../i18n.jsx";
 
@@ -65,12 +66,7 @@ const ICON = {
 const trainees = [
   "Aarav Sharma",
   "Priya Das",
-  "Rohan Patil",
-  "Sneha Mohanty",
-  "Vikram Singh",
-  "Ananya Rao",
-  "Kunal Verma",
-  "Meera Nair",
+  "Rahul Patil",
 ];
 
 export default function AdminDashboard() {
@@ -469,65 +465,584 @@ export default function AdminDashboard() {
           exportReport={exportReport}
         />
       )}
+)
 
-      {/* =========================
-          TRAINEE MODAL
-      ========================== */}
-      {selected && (
+{/* =========================
+    TRAINEE FULL PROFILE
+========================= */}
+
+{selected && traineeProfiles[selected] && (
+  <TraineeProfileModal
+    trainee={traineeProfiles[selected]}
+    onClose={() => setSelected(null)}
+  />
+)}
+    </Shell>
+  );
+}
+/* =========================================================
+   FULL TRAINEE PROFILE MODAL
+========================================================= */
+
+function TraineeProfileModal({ trainee, onClose }) {
+  const journey = [
+    {
+      label: "Training",
+      done: trainee.journey.training,
+    },
+    {
+      label: "Certification",
+      done: trainee.journey.certification,
+    },
+    {
+      label: "Placement",
+      done: trainee.journey.placement,
+    },
+    {
+      label: "Employment",
+      done: trainee.journey.employment,
+    },
+    {
+      label: "3M Retention",
+      done: trainee.journey.retention3M,
+    },
+    {
+      label: "6M Retention",
+      done: trainee.journey.retention6M,
+    },
+    {
+      label: "12M Retention",
+      done: trainee.journey.retention12M,
+    },
+  ];
+
+  return (
+    <div
+      className="modal-backdrop"
+      onClick={onClose}
+      style={{
+        zIndex: 1000,
+      }}
+    >
+      <div
+        className="modal sk-card"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(950px, calc(100vw - 32px))",
+          maxHeight: "90vh",
+          overflowY: "auto",
+          padding: 28,
+          color: "#F4EBDE",
+        }}
+      >
+
+        {/* =========================================
+            HEADER
+        ========================================= */}
+
         <div
-          className="modal-backdrop"
-          onClick={() => setSelected(null)}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: 24,
+          }}
         >
-          <div
-            className="modal sk-card"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
-          >
-            <div className="modal-head">
-              <h3>{selected}</h3>
-
-              <button
-                className="icon-btn"
-                onClick={() =>
-                  setSelected(null)
-                }
-              >
-                ×
-              </button>
-            </div>
-
-            <p>
-              {t.traineeRecord}
-            </p>
-
-            <div className="detail-grid">
-              <span>{t.trainingStatus}</span>
-              <b>{t.completed}</b>
-
-              <span>{t.placementLabel}</span>
-              <b>{t.placed}</b>
-
-              <span>{t.district}</span>
-              <b>Pune</b>
-
-              <span>{t.verification}</span>
-              <b>{t.verified}</b>
-            </div>
-
-            <button
-              className="sk-btn-primary"
-              onClick={() => {
-                setSelected(null);
-                notify(t.recordOpened);
+          <div>
+            <p
+              style={{
+                margin: "0 0 7px",
+                color: T.teal,
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
               }}
             >
-              {t.open}
-            </button>
+              TRAINEE PROFILE
+            </p>
+
+            <h2
+              className="sk-display"
+              style={{
+                margin: 0,
+                color: "#F4EBDE",
+              }}
+            >
+              {trainee.name}
+            </h2>
+
+            <p
+              style={{
+                margin: "7px 0 0",
+                color: T.textDim,
+                fontSize: 12,
+              }}
+            >
+              Trainee ID:{" "}
+              <span
+                style={{
+                  color: "#F4EBDE",
+                  fontFamily: "monospace",
+                }}
+              >
+                {trainee.traineeId}
+              </span>
+            </p>
           </div>
+
+          <button
+            className="icon-btn"
+            onClick={onClose}
+            aria-label="Close trainee profile"
+          >
+            ×
+          </button>
         </div>
-      )}
-    </Shell>
+
+
+        {/* =========================================
+            BASIC INFORMATION
+        ========================================= */}
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(3, minmax(0, 1fr))",
+            gap: 12,
+            marginBottom: 12,
+          }}
+        >
+
+          <ProfileBox
+            label="Course"
+            value={trainee.course}
+          />
+
+          <ProfileBox
+            label="District"
+            value={trainee.district}
+          />
+
+          <ProfileBox
+            label="Status"
+            value={
+              <span
+                style={{
+                  color: T.teal,
+                  fontWeight: 700,
+                }}
+              >
+                🟢 {trainee.status}
+              </span>
+            }
+          />
+
+        </div>
+
+
+        {/* Employment verification */}
+
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 7,
+            padding: "7px 12px",
+            borderRadius: 999,
+            background: "rgba(0,201,173,0.08)",
+            border:
+              "1px solid rgba(0,201,173,0.20)",
+            color: T.teal,
+            fontSize: 12,
+            fontWeight: 600,
+            marginBottom: 28,
+          }}
+        >
+          ✓ Employment Verified
+        </div>
+
+
+        {/* =========================================
+            JOURNEY
+        ========================================= */}
+
+        <ProfileSectionTitle>
+          Journey
+        </ProfileSectionTitle>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(7, minmax(70px, 1fr))",
+            gap: 4,
+            marginBottom: 30,
+          }}
+        >
+          {journey.map((step, index) => (
+            <div
+              key={step.label}
+              style={{
+                position: "relative",
+                textAlign: "center",
+              }}
+            >
+
+              {/* Connecting line */}
+
+              {index < journey.length - 1 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 15,
+                    left: "50%",
+                    width: "100%",
+                    height: 2,
+                    background:
+                      step.done
+                        ? T.teal
+                        : T.border,
+                  }}
+                />
+              )}
+
+              {/* Circle */}
+
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 2,
+                  width: 31,
+                  height: 31,
+                  margin: "0 auto 8px",
+                  borderRadius: "50%",
+                  display: "grid",
+                  placeItems: "center",
+                  background: step.done
+                    ? "rgba(0,201,173,0.12)"
+                    : T.bgElev2,
+                  border:
+                    `1px solid ${
+                      step.done
+                        ? T.teal
+                        : T.border
+                    }`,
+                  color: step.done
+                    ? T.teal
+                    : T.textFaint,
+                  fontWeight: 700,
+                }}
+              >
+                {step.done ? "✓" : "○"}
+              </div>
+
+              <span
+                style={{
+                  color: step.done
+                    ? "#F4EBDE"
+                    : T.textDim,
+                  fontSize: 10,
+                  lineHeight: 1.3,
+                }}
+              >
+                {step.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+
+        {/* =========================================
+            EMPLOYMENT
+        ========================================= */}
+
+        <ProfileSectionTitle>
+          Employment
+        </ProfileSectionTitle>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "1.4fr 1fr 1fr 1fr",
+            gap: 12,
+            marginBottom: 30,
+          }}
+        >
+
+          <ProfileBox
+            label="Employer"
+            value={
+              trainee.employment.employer
+            }
+          />
+
+          <ProfileBox
+            label="Role"
+            value={
+              trainee.employment.role
+            }
+          />
+
+          <ProfileBox
+            label="Joining Date"
+            value={
+              trainee.employment.joiningDate
+            }
+          />
+
+          <ProfileBox
+            label="Current Salary"
+            value={
+              trainee.employment.currentSalary
+            }
+          />
+
+        </div>
+
+
+        {/* =========================================
+            WAGE PROGRESSION
+        ========================================= */}
+
+        <ProfileSectionTitle>
+          Wage Progression
+        </ProfileSectionTitle>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(4, 1fr)",
+            gap: 10,
+          }}
+        >
+
+          {trainee.wageProgression.map(
+            (item) => (
+              <div
+                key={item.label}
+                style={{
+                  padding: 14,
+                  background: T.bgElev1,
+                  border:
+                    `1px solid ${T.border}`,
+                  borderRadius: 10,
+                }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    color: T.textDim,
+                    fontSize: 10.5,
+                    marginBottom: 7,
+                  }}
+                >
+                  {item.label}
+                </span>
+
+                <strong
+                  style={{
+                    color: "#F4EBDE",
+                    fontSize: 15,
+                  }}
+                >
+                  {item.salary}
+                </strong>
+              </div>
+            )
+          )}
+
+        </div>
+
+
+        {/* Growth */}
+
+        <div
+          style={{
+            color: T.teal,
+            fontSize: 13,
+            fontWeight: 700,
+            margin:
+              "12px 0 30px",
+          }}
+        >
+          ↗ Growth {trainee.growth}
+        </div>
+
+
+        {/* =========================================
+            FOLLOW-UP HISTORY
+        ========================================= */}
+
+        <ProfileSectionTitle>
+          Follow-up History
+        </ProfileSectionTitle>
+
+        <div>
+          {trainee.followups.map(
+            (followup, index) => (
+              <div
+                key={`${followup.date}-${followup.text}`}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "70px 30px 1fr",
+                  alignItems: "center",
+                  minHeight: 48,
+                }}
+              >
+
+                <span
+                  style={{
+                    color: T.textDim,
+                    fontSize: 11,
+                    fontFamily:
+                      "monospace",
+                  }}
+                >
+                  {followup.date}
+                </span>
+
+
+                <span
+                  style={{
+                    width: 19,
+                    height: 19,
+                    display: "grid",
+                    placeItems: "center",
+                    borderRadius: "50%",
+                    background:
+                      followup.done
+                        ? "rgba(0,201,173,0.12)"
+                        : T.bgElev2,
+                    border:
+                      `1px solid ${
+                        followup.done
+                          ? T.teal
+                          : T.border
+                      }`,
+                    color:
+                      followup.done
+                        ? T.teal
+                        : T.textFaint,
+                    fontSize: 10,
+                  }}
+                >
+                  {followup.done
+                    ? "✓"
+                    : "○"}
+                </span>
+
+
+                <span
+                  style={{
+                    color:
+                      followup.done
+                        ? "#F4EBDE"
+                        : T.textDim,
+                    fontSize: 12.5,
+                  }}
+                >
+                  {followup.text}
+                </span>
+
+              </div>
+            )
+          )}
+        </div>
+
+
+        {/* =========================================
+            FOOTER
+        ========================================= */}
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: 22,
+            paddingTop: 18,
+            borderTop:
+              `1px solid ${T.border}`,
+          }}
+        >
+          <button
+            className="sk-btn-primary"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+
+/* =========================================================
+   PROFILE BOX
+========================================================= */
+
+function ProfileBox({
+  label,
+  value,
+}) {
+  return (
+    <div
+      style={{
+        padding: 14,
+        background: T.bgElev1,
+        border:
+          `1px solid ${T.border}`,
+        borderRadius: 10,
+      }}
+    >
+      <div
+        style={{
+          color: T.textDim,
+          fontSize: 10.5,
+          marginBottom: 7,
+        }}
+      >
+        {label}
+      </div>
+
+      <div
+        style={{
+          color: "#F4EBDE",
+          fontSize: 12.5,
+          fontWeight: 600,
+          lineHeight: 1.4,
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+
+/* =========================================================
+   PROFILE SECTION TITLE
+========================================================= */
+
+function ProfileSectionTitle({
+  children,
+}) {
+  return (
+    <h3
+      style={{
+        color: "#F4EBDE",
+        fontSize: 14,
+        fontWeight: 650,
+        margin: "0 0 12px",
+      }}
+    >
+      {children}
+    </h3>
   );
 }
 

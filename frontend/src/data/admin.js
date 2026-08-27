@@ -37,3 +37,220 @@ export const districts = [
   { name: "Aurangabad", rate: 60 },
   { name: "Kolhapur", rate: 58 },
 ];
+export const traineeProfiles = {
+  "Aarav Sharma": {
+    name: "Aarav Sharma",
+    traineeId: "MH-PUN-2025-05600",
+
+    course: "CNC Operator",
+    district: "Pune",
+
+    status: "EMPLOYED",
+    employmentVerified: true,
+
+    journey: {
+      training: true,
+      certification: true,
+      placement: true,
+      employment: true,
+      retention3M: true,
+      retention6M: true,
+      retention12M: false,
+    },
+
+    employment: {
+      employer: "Tata Manufacturing Solutions Pvt. Ltd.",
+      role: "CNC Operator",
+      joiningDate: "10 March 2025",
+      currentSalary: "₹25,500/month",
+    },
+
+    wageProgression: [
+      {
+        label: "Starting",
+        salary: "₹18,500",
+      },
+      {
+        label: "3 Months",
+        salary: "₹21,000",
+      },
+      {
+        label: "6 Months",
+        salary: "₹23,000",
+      },
+      {
+        label: "Current",
+        salary: "₹25,500",
+      },
+    ],
+
+    growth: "+37.8%",
+
+    followups: [
+      {
+        date: "10 Mar",
+        text: "Placement confirmed",
+        done: true,
+      },
+      {
+        date: "10 Jun",
+        text: "3M follow-up",
+        done: true,
+      },
+      {
+        date: "10 Sep",
+        text: "6M follow-up",
+        done: true,
+      },
+      {
+        date: "10 Dec",
+        text: "9M follow-up pending",
+        done: false,
+      },
+    ],
+  },
+
+  "Priya Das": {
+    name: "Priya Das",
+    traineeId: "MH-NGP-2025-05601",
+
+    course: "Data Analytics",
+    district: "Nagpur",
+
+    status: "EMPLOYED",
+    employmentVerified: true,
+
+    journey: {
+      training: true,
+      certification: true,
+      placement: true,
+      employment: true,
+      retention3M: true,
+      retention6M: true,
+      retention12M: false,
+    },
+
+    employment: {
+      employer: "Infoserve Analytics Pvt. Ltd.",
+      role: "Junior Data Analyst",
+      joiningDate: "18 March 2025",
+      currentSalary: "₹29,000/month",
+    },
+
+    wageProgression: [
+      {
+        label: "Starting",
+        salary: "₹23,000",
+      },
+      {
+        label: "3 Months",
+        salary: "₹25,000",
+      },
+      {
+        label: "6 Months",
+        salary: "₹27,000",
+      },
+      {
+        label: "Current",
+        salary: "₹29,000",
+      },
+    ],
+
+    growth: "+26.1%",
+
+    followups: [
+      {
+        date: "18 Mar",
+        text: "Placement confirmed",
+        done: true,
+      },
+      {
+        date: "18 Jun",
+        text: "3M follow-up",
+        done: true,
+      },
+      {
+        date: "18 Sep",
+        text: "6M follow-up",
+        done: true,
+      },
+      {
+        date: "18 Dec",
+        text: "9M follow-up pending",
+        done: false,
+      },
+    ],
+  },
+
+  "Rahul Patil": {
+    name: "Rahul Patil",
+    traineeId: "MH-PUN-2025-08421",
+
+    course: "CNC Operator",
+    district: "Pune",
+
+    status: "EMPLOYED",
+    employmentVerified: true,
+
+    journey: {
+      training: true,
+      certification: true,
+      placement: true,
+      employment: true,
+      retention3M: true,
+      retention6M: true,
+      retention12M: false,
+    },
+
+    employment: {
+      employer: "ABC Manufacturing Pvt. Ltd.",
+      role: "CNC Operator",
+      joiningDate: "14 March 2025",
+      currentSalary: "₹24,500/month",
+    },
+
+    wageProgression: [
+      {
+        label: "Starting",
+        salary: "₹18,000",
+      },
+      {
+        label: "3 Months",
+        salary: "₹20,000",
+      },
+      {
+        label: "6 Months",
+        salary: "₹22,000",
+      },
+      {
+        label: "Current",
+        salary: "₹24,500",
+      },
+    ],
+
+    growth: "+36.1%",
+
+    followups: [
+      {
+        date: "14 Mar",
+        text: "Placement confirmed",
+        done: true,
+      },
+      {
+        date: "14 Jun",
+        text: "3M follow-up",
+        done: true,
+      },
+      {
+        date: "14 Sep",
+        text: "6M follow-up",
+        done: true,
+      },
+      {
+        date: "14 Dec",
+        text: "9M follow-up pending",
+        done: false,
+      },
+    ],
+  },
+};
