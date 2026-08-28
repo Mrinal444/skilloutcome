@@ -20,5 +20,22 @@ class Settings:
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
     )
 
+    # The ML API is an independently deployed service.  Keep each timeout
+    # explicit so slow model inference cannot consume backend connections
+    # indefinitely.
+    ML_SERVICE_URL: str = os.getenv("ML_SERVICE_URL", "http://127.0.0.1:8001").rstrip("/")
+    ML_CONNECT_TIMEOUT_SECONDS: float = float(
+        os.getenv("ML_CONNECT_TIMEOUT_SECONDS", "2")
+    )
+    ML_READ_TIMEOUT_SECONDS: float = float(
+        os.getenv("ML_READ_TIMEOUT_SECONDS", "10")
+    )
+    ML_WRITE_TIMEOUT_SECONDS: float = float(
+        os.getenv("ML_WRITE_TIMEOUT_SECONDS", "10")
+    )
+    ML_POOL_TIMEOUT_SECONDS: float = float(
+        os.getenv("ML_POOL_TIMEOUT_SECONDS", "2")
+    )
+
 
 settings = Settings()

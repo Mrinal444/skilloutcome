@@ -22,6 +22,7 @@ from app.routers import (
     employment,
     followups,
     analytics,
+    ml,
 )
 
 from contextlib import asynccontextmanager
@@ -70,3 +71,4 @@ app.include_router(employers.router, prefix=PREFIX)
 app.include_router(employment.router, prefix=PREFIX)
 app.include_router(followups.router, prefix=PREFIX)
 app.include_router(analytics.router, prefix=PREFIX)
+app.include_router(ml.router, prefix=PREFIX)
