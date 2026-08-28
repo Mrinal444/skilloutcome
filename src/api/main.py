@@ -6,10 +6,12 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+import sklearn
+import xgboost
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from src.modeling.features import attrition_api_frame, feature_contract_fingerprint, load_role_requirements, placement_api_frame, skill_gap_analysis
+from src.modeling.features import MODEL_BUNDLE_SCHEMA_VERSION, attrition_api_frame, feature_contract_fingerprint, load_role_requirements, placement_api_frame, skill_gap_analysis
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODELS_DIR = PROJECT_ROOT / "models"
@@ -111,7 +113,7 @@ class SkillGapResponse(BaseModel):
 
 
 class StaleModelError(RuntimeError):
-    """Raised when a saved model no longer matches the current feature contract."""
+    """Raised when a saved model cannot safely serve under the current contract."""
 
 
 @lru_cache(maxsize=2)
@@ -122,9 +124,21 @@ def _load_bundle(model_name: str) -> dict:
     bundle = joblib.load(path)
     if not isinstance(bundle, dict) or "pipeline" not in bundle:
         raise ValueError(f"Invalid model bundle: {path}")
-    stored = bundle.get("metadata", {}).get("feature_contract_fingerprint")
+    metadata = bundle.get("metadata", {})
+    if not isinstance(metadata, dict):
+        raise ValueError(f"Invalid model metadata: {path}")
+    if metadata.get("bundle_schema_version") != MODEL_BUNDLE_SCHEMA_VERSION:
+        raise StaleModelError(f"{model_name} uses model-bundle schema {metadata.get('bundle_schema_version', 'unknown')} but this service requires {MODEL_BUNDLE_SCHEMA_VERSION}. Retrain with python -m src.modeling.train.")
+    stored = metadata.get("feature_contract_fingerprint")
     if stored != feature_contract_fingerprint():
         raise StaleModelError(f"{model_name} was trained on feature contract {stored or 'unknown'} but the code expects {feature_contract_fingerprint()}. Retrain with python -m src.modeling.train.")
+    report = metadata.get("report")
+    threshold_key = "support_thresholds" if model_name == "placement_model" else "risk_thresholds"
+    if not isinstance(report, dict) or not isinstance(report.get("calibration"), dict) or threshold_key not in report:
+        raise StaleModelError(f"{model_name} is missing calibrated probability or threshold metadata. Retrain with python -m src.modeling.train.")
+    expected_versions = {"scikit_learn": sklearn.__version__, "xgboost": xgboost.__version__, "pandas": pd.__version__}
+    if metadata.get("runtime_versions") != expected_versions:
+        raise StaleModelError(f"{model_name} was trained with different package versions. Recreate the pinned environment and retrain with python -m src.modeling.train.")
     return bundle
 
 

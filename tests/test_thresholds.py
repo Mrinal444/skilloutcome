@@ -4,17 +4,47 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 
 pytest.importorskip("sklearn")
 pytest.importorskip("xgboost")
 
-from src.modeling.train import _band_summary, _f1_optimal_threshold, _risk_bands, _support_bands
+from src.modeling.train import _band_summary, _calibrate, _f1_optimal_threshold, _risk_bands, _support_bands
 
 
 def test_f1_optimal_threshold_separates_a_clean_split():
     y_true = pd.Series([0, 0, 0, 1, 1, 1])
     score = np.array([0.1, 0.2, 0.3, 0.7, 0.8, 0.9])
     assert _f1_optimal_threshold(y_true, score) == pytest.approx(0.7)
+
+
+def test_calibration_freezes_the_previously_fitted_estimator():
+    """Calibration must fit only the probability mapper on the later window."""
+    train_x = pd.DataFrame({"score": [0.0, 0.1, 0.8, 0.9]})
+    train_y = pd.Series([0, 0, 1, 1])
+    calibration_x = pd.DataFrame({"score": [0.05, 0.15, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.85, 0.95]})
+    calibration_y = pd.Series([0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+    base = Pipeline([("model", LogisticRegression(random_state=26135))]).fit(train_x, train_y)
+    base_model = base.named_steps["model"]
+    coefficients_before = base_model.coef_.copy()
+    intercept_before = base_model.intercept_.copy()
+    classes_before = base_model.classes_.copy()
+    predictions_before = base.predict_proba(calibration_x).copy()
+
+    calibrated, method = _calibrate(base, calibration_x, calibration_y)
+
+    assert method == "sigmoid"
+    assert calibrated.cv == 5
+    # FrozenEstimator makes ``ensemble='auto'`` use one calibrator fit on the
+    # whole calibration window; the original training-window model is untouched.
+    assert len(calibrated.calibrated_classifiers_) == 1
+    np.testing.assert_array_equal(base_model.coef_, coefficients_before)
+    np.testing.assert_array_equal(base_model.intercept_, intercept_before)
+    np.testing.assert_array_equal(base_model.classes_, classes_before)
+    np.testing.assert_allclose(base.predict_proba(calibration_x), predictions_before)
+    probabilities = calibrated.predict_proba(calibration_x)[:, 1]
+    assert np.all((probabilities >= 0) & (probabilities <= 1))
 
 
 def test_risk_bands_rise_with_probability():

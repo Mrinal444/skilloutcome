@@ -20,8 +20,10 @@
    than accuracy at 0.5. Both selection metrics are rank-based, so calibration cannot change the
    winner.
 8. The winning algorithm is refit on the training window only and then calibrated on the later
-   validation window with `CalibratedClassifierCV(cv="prefit")` — isotonic when the calibration
-   window holds at least 1000 positives, otherwise sigmoid. The served bundle is the calibrated
+   validation window with `CalibratedClassifierCV(FrozenEstimator(base_estimator), cv=5)`. In the
+   pinned scikit-learn runtime, the frozen estimator selects the single-calibrator path: its base
+   model is not refit, and the calibrator uses the entire validation window. It uses isotonic when
+   that window holds at least 1000 positives, otherwise sigmoid. The served bundle is the calibrated
    model, so a reported 0.08 means roughly eight in a hundred. `reports/*_metrics.json` records the
    test Brier score before and after calibration next to the baseline Brier at the test positive
    rate, so the gain (or its absence) is visible rather than assumed.
@@ -38,9 +40,10 @@
 10. Both reports record the band distribution on the test window with the *observed* outcome rate per
     band (`risk_band_distribution_test`, `support_band_distribution_test`), so band separation is
     measured rather than asserted, and the model card can cite the numbers directly.
-11. `feature_contract_fingerprint()` hashes the feature lists and the skills-tokenisation version
-    into each saved bundle. The API refuses to serve a bundle whose fingerprint no longer matches,
-    which turns a silent train/serve skew into an explicit 503 and a retrain instruction.
+11. `feature_contract_fingerprint()` hashes the feature lists, skills-tokenisation version, and
+   model-bundle schema into each saved bundle. The API also verifies calibration/threshold metadata
+   and exact runtime versions pinned in `requirements.txt`. It refuses an incompatible bundle with an explicit 503 and a
+   retrain instruction instead of silently serving a raw or stale estimator.
 
 Skills are encoded as one TF-IDF token per skill through `skills_to_text`, so `Power BI` stays a
 single `power_bi` token and the token order never varies.

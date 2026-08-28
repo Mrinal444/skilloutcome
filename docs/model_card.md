@@ -41,8 +41,10 @@ count and its observed attrition rate on held-out data.
 ## Calibration and how to read a probability
 
 The selected algorithm is fit on the training window and then calibrated on the later validation
-window, which it never trained on (`CalibratedClassifierCV(cv="prefit")`; isotonic when that window
-holds at least 1000 positives, otherwise sigmoid). The bundle that is served is the calibrated model,
+window, which it never trained on (`CalibratedClassifierCV(FrozenEstimator(base_estimator), cv=5)`;
+with the pinned runtime this uses one calibrator over the whole validation window while leaving the
+base estimator unchanged; isotonic when that window holds at least 1000 positives, otherwise sigmoid).
+The bundle that is served is the calibrated model,
 so a reported probability is meant to be read as a rate, not just a ranking score. The
 `calibration` block in each report shows the test Brier score before and after calibration alongside
 `baseline_brier_at_test_positive_rate` — the score a model that always predicts the base rate would
@@ -56,9 +58,10 @@ in `threshold_selection_note`.
 ## Train/serve consistency
 
 Placement and attrition features are defined once in `src/modeling/features.py` and built by the
-same functions in training and serving. Each bundle stores a fingerprint of the feature contract
-and the skills-tokenisation version; the API returns 503 with a retrain instruction if a bundle no
-longer matches the code, and `GET /health` reports the status of each model.
+same functions in training and serving. Each bundle stores a fingerprint of the feature contract,
+the skills-tokenisation version, a bundle-schema version, and its runtime package versions. The API
+returns 503 with a retrain instruction if a bundle lacks calibrated thresholds or no longer matches,
+and `GET /health` reports the status of each model.
 
 ## Data limitation
 

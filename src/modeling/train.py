@@ -10,10 +10,13 @@ from typing import Callable
 import joblib
 import numpy as np
 import pandas as pd
+import sklearn
+import xgboost
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.frozen import FrozenEstimator
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, average_precision_score, brier_score_loss, confusion_matrix, f1_score, precision_recall_curve, precision_score, recall_score, roc_auc_score
@@ -21,7 +24,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from xgboost import XGBClassifier
 
-from src.modeling.features import ATTRITION_CATEGORICAL_FEATURES, ATTRITION_FEATURES, ATTRITION_NUMERIC_FEATURES, ATTRITION_TEXT_FEATURE, PLACEMENT_CATEGORICAL_FEATURES, PLACEMENT_FEATURES, PLACEMENT_NUMERIC_FEATURES, PLACEMENT_TEXT_FEATURE, TEXT_ENCODING_VERSION, build_attrition_frame, build_placement_frame, feature_contract_fingerprint, validate_snapshot
+from src.modeling.features import ATTRITION_CATEGORICAL_FEATURES, ATTRITION_FEATURES, ATTRITION_NUMERIC_FEATURES, ATTRITION_TEXT_FEATURE, MODEL_BUNDLE_SCHEMA_VERSION, PLACEMENT_CATEGORICAL_FEATURES, PLACEMENT_FEATURES, PLACEMENT_NUMERIC_FEATURES, PLACEMENT_TEXT_FEATURE, TEXT_ENCODING_VERSION, build_attrition_frame, build_placement_frame, feature_contract_fingerprint, validate_snapshot
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODELS_DIR = PROJECT_ROOT / "models"
@@ -99,7 +102,11 @@ def _support_bands(probability: np.ndarray, medium: float, high: float) -> np.nd
 def _calibrate(base: Pipeline, X_calibration: pd.DataFrame, y_calibration: pd.Series) -> tuple[CalibratedClassifierCV, str]:
     """Map raw scores onto probabilities using a split the base estimator never saw."""
     method = "isotonic" if int(y_calibration.sum()) >= CALIBRATION_ISOTONIC_MIN_POSITIVES else "sigmoid"
-    calibrated = CalibratedClassifierCV(estimator=base, method=method, cv="prefit")
+    # In scikit-learn 1.9, ``ensemble='auto'`` selects the single-calibrator path
+    # for FrozenEstimator. ``cv=5`` only obtains validation-window predictions;
+    # the frozen base model's ``fit`` is a no-op and one calibrator is fit on all
+    # validation rows. The test suite guards these semantics.
+    calibrated = CalibratedClassifierCV(estimator=FrozenEstimator(base), method=method, cv=5)
     calibrated.fit(X_calibration, y_calibration)
     return calibrated, method
 
@@ -161,7 +168,7 @@ def _train_binary(frame: pd.DataFrame, target: pd.Series, numeric: list[str], ca
 def _save_bundle(name: str, pipeline: Pipeline, report: dict, feature_contract: list[str], source_path: str) -> None:
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    bundle = {"pipeline": pipeline, "metadata": {"trained_at_utc": datetime.now(timezone.utc).isoformat(), "source_path": source_path, "feature_contract": feature_contract, "feature_contract_fingerprint": feature_contract_fingerprint(), "text_encoding_version": TEXT_ENCODING_VERSION, "report": report}}
+    bundle = {"pipeline": pipeline, "metadata": {"bundle_schema_version": MODEL_BUNDLE_SCHEMA_VERSION, "trained_at_utc": datetime.now(timezone.utc).isoformat(), "source_path": source_path, "feature_contract": feature_contract, "feature_contract_fingerprint": feature_contract_fingerprint(), "text_encoding_version": TEXT_ENCODING_VERSION, "runtime_versions": {"scikit_learn": sklearn.__version__, "xgboost": xgboost.__version__, "pandas": pd.__version__}, "report": report}}
     joblib.dump(bundle, MODELS_DIR / f"{name}.joblib")
     (REPORTS_DIR / f"{name}_metrics.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 

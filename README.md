@@ -22,9 +22,10 @@ python -m pytest
 uvicorn src.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-Training and serving agree through a feature-contract fingerprint stored in each model bundle.
-Change the feature lists or the skills tokenisation and the API returns 503 until both models are
-retrained; `GET /health` reports which bundles still match.
+Training and serving agree through a feature-contract fingerprint and bundle schema stored in each
+model bundle. Change the feature lists, skills tokenisation, calibration contract, or supported
+runtime versions and the API returns 503 until both models are retrained; `GET /health` reports
+which bundles still match.
 
 Neither model is read at a 0.5 cut-off. Placement returns a `support_priority` band (priority rises
 as placement probability falls, because ~86% of completers are placed) and attrition returns a

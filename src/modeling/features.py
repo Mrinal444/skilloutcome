@@ -30,11 +30,14 @@ ATTRITION_FEATURES = ATTRITION_NUMERIC_FEATURES + ATTRITION_CATEGORICAL_FEATURES
 # Bumped whenever Skills_Text tokenisation changes. Training and serving must agree,
 # so the version is stored in the model bundle and checked by the API.
 TEXT_ENCODING_VERSION = 2
+# Increment this whenever saved-model metadata or serving semantics change.  Feature names
+# alone cannot distinguish a calibrated bundle from an older raw-estimator bundle.
+MODEL_BUNDLE_SCHEMA_VERSION = 2
 
 
 def feature_contract_fingerprint() -> str:
     """Short hash of the feature contract, used to reject stale model bundles."""
-    payload = json.dumps({"placement": PLACEMENT_FEATURES, "attrition": ATTRITION_FEATURES, "text_encoding": TEXT_ENCODING_VERSION}, sort_keys=True)
+    payload = json.dumps({"placement": PLACEMENT_FEATURES, "attrition": ATTRITION_FEATURES, "text_encoding": TEXT_ENCODING_VERSION, "model_bundle_schema": MODEL_BUNDLE_SCHEMA_VERSION}, sort_keys=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 

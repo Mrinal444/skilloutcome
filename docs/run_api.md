@@ -7,9 +7,12 @@ python -m pytest
 uvicorn src.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-Retrain whenever the feature contract changes. If `src/modeling/features.py` changes a feature list
-or `TEXT_ENCODING_VERSION`, the saved bundles no longer match their fingerprint and every prediction
-endpoint returns 503 until step two is rerun. `GET /health` shows which bundle is stale.
+Retrain whenever the serving contract changes. If `src/modeling/features.py` changes a feature list,
+`TEXT_ENCODING_VERSION`, or `MODEL_BUNDLE_SCHEMA_VERSION`, the saved bundles no longer match their
+fingerprint and every prediction endpoint returns 503 until step two is rerun. The persisted-model
+packages (pandas, scikit-learn, and XGBoost) are exact pins in `requirements.txt`; bundles record
+those versions and the API refuses to serve them under a different runtime. `GET /health` shows
+which bundle is stale.
 
 Close `data/processed/*.csv` in Excel or any sync client before regenerating. The pipeline probes
 each destination for a lock first and refuses to start rather than leaving a half-written dataset;
