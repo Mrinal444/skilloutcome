@@ -3,6 +3,7 @@ import {
   GraduationCap,
   BarChart3,
   Building2,
+  BookOpen,
   ArrowRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -57,6 +58,7 @@ export default function RoleScreen() {
         "Discover placement-ready trainees by skill and district.",
       icon: Building2,
     },
+    { id: "provider", label: "Training Provider", desc: "Manage programmes and trainee enrolments.", icon: BookOpen },
   ];
 
   /*

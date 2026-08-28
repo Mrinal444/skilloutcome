@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.followup import FollowUp, FollowUpType, FollowUpStatus
+from app.models.trainee import Trainee
 from app.models.user import User
 from app.schemas.followup import FollowUpCreate, FollowUpResponse
 from app.schemas.common import APIResponse
@@ -71,6 +72,10 @@ def get_followup_history(
         .order_by(FollowUp.created_at)
         .all()
     )
+    if current_user.role.value == "TRAINEE":
+        trainee = db.query(Trainee).filter(Trainee.trainee_id == trainee_id, Trainee.user_id == current_user.id).first()
+        if not trainee:
+            raise HTTPException(status_code=403, detail="Cannot access another trainee's follow-ups")
 
     return APIResponse(
         success=True,

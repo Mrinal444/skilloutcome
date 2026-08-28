@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 
@@ -10,3 +11,5 @@ class Employer(Base):
     industry = Column(String(100))
     location = Column(String(100))
     verification_status = Column(Boolean, default=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    user = relationship("User", back_populates="employer", uselist=False)

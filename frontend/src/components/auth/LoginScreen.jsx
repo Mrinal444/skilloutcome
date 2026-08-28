@@ -6,8 +6,8 @@ import InputField from "../common/InputField.jsx";
 import { T } from "../../theme.js";
 import { useI18n } from "../../i18n.jsx";
 
-const roleNames={trainee:"Trainee",admin:"Government Admin",employer:"Employer / Provider"};
-const rolePaths={trainee:"/trainee",admin:"/admin",employer:"/employer"};
+const roleNames={trainee:"Trainee",admin:"Government Admin",employer:"Employer",provider:"Training Provider"};
+const rolePaths={trainee:"/trainee",admin:"/admin",employer:"/employer",provider:"/provider"};
 
 export default function LoginScreen(){
   const nav=useNavigate();

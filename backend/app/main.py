@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import engine, Base
+from app.database import initialize_database
 from app.models import (
     User,
     Trainee,
@@ -29,7 +29,7 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Create database tables on startup."""
-    Base.metadata.create_all(bind=engine)
+    initialize_database()
     yield
 
 

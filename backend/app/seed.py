@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 
-from app.database import SessionLocal, engine, Base
+from app.database import SessionLocal, engine, initialize_database
 from app.models.user import User, UserRole
 from app.models.trainee import Trainee, TraineeSkill, SkillLevel
 from app.models.skill import Skill
@@ -116,7 +116,7 @@ JOB_ROLES = [
 def seed():
     """Main seed function. Idempotent — checks before inserting."""
     # Create tables
-    Base.metadata.create_all(bind=engine)
+    initialize_database()
     db = SessionLocal()
 
     try:
@@ -184,6 +184,7 @@ def seed():
                 provider=provider_name,
                 duration=duration,
                 category=category,
+                provider_user_id=provider_users[i % len(provider_users)].id,
             )
             db.add(p)
             programs.append(p)
@@ -198,6 +199,7 @@ def seed():
                 industry=industry,
                 location=location,
                 verification_status=True,
+                user_id=employer_users[len(employers)].id,
             )
             db.add(e)
             employers.append(e)

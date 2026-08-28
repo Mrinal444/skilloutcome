@@ -20,6 +20,7 @@ class TrainingProgram(Base):
     provider = Column(String(200), nullable=False)
     duration = Column(String(50))
     category = Column(String(100))
+    provider_user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
 
     enrollments = relationship("TrainingEnrollment", back_populates="program")
 

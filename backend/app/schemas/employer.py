@@ -16,3 +16,13 @@ class EmployerResponse(BaseModel):
     verification_status: bool = False
 
     model_config = {"from_attributes": True}
+
+
+class EmployerVerificationUpdate(BaseModel):
+    verification_status: bool
+
+
+class EmployerUpdate(BaseModel):
+    company_name: Optional[str] = None
+    industry: Optional[str] = None
+    location: Optional[str] = None

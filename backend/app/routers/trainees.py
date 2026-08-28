@@ -91,6 +91,16 @@ def get_all_trainees(
     )
 
 
+@router.get("/me", response_model=APIResponse)
+def get_my_trainee(current_user: User = Depends(role_required("TRAINEE")), db: Session = Depends(get_db)):
+    trainee = (db.query(Trainee)
+               .options(joinedload(Trainee.user), joinedload(Trainee.skills).joinedload(TraineeSkill.skill))
+               .filter(Trainee.user_id == current_user.id).first())
+    if not trainee:
+        raise HTTPException(status_code=404, detail="Trainee profile not found")
+    return APIResponse(success=True, message="Trainee profile retrieved successfully", data=_build_trainee_response(trainee))
+
+
 @router.get("/{trainee_id}", response_model=APIResponse)
 def get_trainee(
     trainee_id: int,
@@ -112,6 +122,8 @@ def get_trainee(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Trainee not found",
         )
+    if current_user.role.value == "TRAINEE" and trainee.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Cannot access another trainee's profile")
 
     return APIResponse(
         success=True,
@@ -137,7 +149,6 @@ def update_trainee(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Trainee not found",
         )
-
     # Only allow trainee to update own profile (admins can update any)
     if current_user.role.value != "ADMIN" and trainee.user_id != current_user.id:
         raise HTTPException(
@@ -176,6 +187,8 @@ def assign_skills(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Trainee not found",
         )
+    if current_user.role.value == "TRAINEE" and trainee.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot modify another trainee's skills")
 
     added_skills = []
     for skill_item in payload.skills:
@@ -200,12 +213,12 @@ def assign_skills(
             try:
                 existing.level = SkillLevel(skill_item.level.upper())
             except ValueError:
-                existing.level = SkillLevel.BEGINNER
+                raise HTTPException(status_code=400, detail="Invalid skill level")
         else:
             try:
                 level = SkillLevel(skill_item.level.upper())
             except ValueError:
-                level = SkillLevel.BEGINNER
+                raise HTTPException(status_code=400, detail="Invalid skill level")
 
             ts = TraineeSkill(
                 trainee_id=trainee_id,

@@ -3,6 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, Enum, DateTime
 from app.database import Base
+from sqlalchemy.orm import relationship
 
 
 class UserRole(str, enum.Enum):
@@ -21,3 +22,5 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     role = Column(Enum(UserRole), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    employer = relationship("Employer", back_populates="user", uselist=False)
+    training_programs = relationship("TrainingProgram", backref="provider_user")

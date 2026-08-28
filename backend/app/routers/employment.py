@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.employment import EmploymentRecord, EmploymentStatus
+from app.models.employer import Employer
+from app.models.trainee import Trainee
 from app.models.user import User
 from app.schemas.employment import EmploymentCreate, EmploymentUpdate, EmploymentResponse
 from app.schemas.common import APIResponse
@@ -28,6 +30,10 @@ def add_employment_record(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid status. Must be one of: {[s.value for s in EmploymentStatus]}",
         )
+    if current_user.role.value == "EMPLOYER":
+        employer = db.query(Employer).filter(Employer.employer_id == payload.employer_id, Employer.user_id == current_user.id).first()
+        if not employer:
+            raise HTTPException(status_code=403, detail="Cannot use another employer's profile")
 
     record = EmploymentRecord(
         trainee_id=payload.trainee_id,
@@ -47,6 +53,14 @@ def add_employment_record(
     )
 
 
+@router.get("/mine", response_model=APIResponse)
+def get_my_employment_records(current_user: User = Depends(role_required("EMPLOYER")), db: Session = Depends(get_db)):
+    records = (db.query(EmploymentRecord).join(EmploymentRecord.employer)
+               .filter_by(user_id=current_user.id).all())
+    return APIResponse(success=True, message="Employer employment records retrieved successfully",
+                       data=[EmploymentResponse.model_validate(r).model_dump() for r in records])
+
+
 @router.get("/{trainee_id}", response_model=APIResponse)
 def get_employment_history(
     trainee_id: int,
@@ -57,6 +71,10 @@ def get_employment_history(
     GET /api/v1/employment/{trainee_id}
     Returns complete employment journey for a trainee.
     """
+    if current_user.role.value == "TRAINEE":
+        trainee = db.query(Trainee).filter(Trainee.trainee_id == trainee_id).first()
+        if not trainee or trainee.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Cannot access another trainee's employment history")
     records = (
         db.query(EmploymentRecord)
         .filter(EmploymentRecord.trainee_id == trainee_id)
@@ -91,6 +109,8 @@ def update_employment(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Employment record not found",
         )
+    if current_user.role.value == "EMPLOYER" and record.employer.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot update another employer's employment record")
 
     if payload.status is not None:
         try:

@@ -31,12 +31,27 @@ pip install -r requirements.txt
 copy .env.example .env    # Windows
 # cp .env.example .env     # Linux/Mac
 
-# 4. Run the server
+# 4. Initialize the database (PostgreSQL; SQLite creates itself for local development)
+alembic upgrade head
+
+# 5. Run the server
 uvicorn app.main:app --reload
 
-# 5. Seed the database with synthetic data
+# 6. Seed the database with synthetic data
 python -m app.seed
 ```
+
+Set `DATABASE_URL` in `.env` to select PostgreSQL. The application never changes a
+PostgreSQL schema at runtime; use Alembic for migrations. The existing SQLite
+database is preserved as a local fallback. Export/import legacy SQLite data only
+after reviewing ownership fields (`employers.user_id` and
+`training_programs.provider_user_id`); these cannot be safely inferred for every
+legacy row automatically.
+
+For PostgreSQL locally, install PostgreSQL, create a database named
+`skilloutcome`, set `DATABASE_URL=postgresql+psycopg2://USER:PASSWORD@localhost:5432/skilloutcome`,
+then run `pip install -r requirements.txt`, `alembic upgrade head`, and
+`python -m app.seed`.
 
 ## API Docs
 

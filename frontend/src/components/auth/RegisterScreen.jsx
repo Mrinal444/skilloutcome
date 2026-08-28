@@ -6,7 +6,7 @@ import InputField from "../common/InputField.jsx";
 import {T} from "../../theme.js";
 import {useI18n} from "../../i18n.jsx";
 
-const roleNames={trainee:"Trainee",admin:"Government Admin",employer:"Employer / Provider"};
+const roleNames={trainee:"Trainee",admin:"Government Admin",employer:"Employer",provider:"Training Provider"};
 export default function RegisterScreen(){
  const nav=useNavigate();const {role="trainee"}=useParams();const {t}=useI18n();
  const [form,setForm]=useState({name:"",email:"",pw:"",confirm:""});const [err,setErr]=useState("");

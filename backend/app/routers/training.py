@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.training import TrainingProgram, TrainingEnrollment, EnrollmentStatus
 from app.models.user import User
+from app.models.trainee import Trainee
 from app.schemas.training import (
     TrainingProgramCreate,
     TrainingProgramResponse,
@@ -37,6 +38,7 @@ def create_training_program(
         provider=payload.provider or current_user.name,
         duration=payload.duration,
         category=payload.category,
+        provider_user_id=current_user.id if current_user.role.value == "PROVIDER" else None,
     )
     db.add(program)
     db.commit()
@@ -61,6 +63,21 @@ def get_training_programs(db: Session = Depends(get_db)):
         message="Training programs retrieved successfully",
         data=[TrainingProgramResponse.model_validate(p).model_dump() for p in programs],
     )
+
+
+@router.get("/mine", response_model=APIResponse)
+def get_my_training_programs(current_user: User = Depends(role_required("PROVIDER")), db: Session = Depends(get_db)):
+    programs = db.query(TrainingProgram).filter(TrainingProgram.provider_user_id == current_user.id).all()
+    return APIResponse(success=True, message="Provider programmes retrieved successfully",
+                       data=[TrainingProgramResponse.model_validate(p).model_dump() for p in programs])
+
+
+@router.get("/mine/enrollments", response_model=APIResponse)
+def get_my_provider_enrollments(current_user: User = Depends(role_required("PROVIDER")), db: Session = Depends(get_db)):
+    enrollments = (db.query(TrainingEnrollment).join(TrainingProgram)
+                   .filter(TrainingProgram.provider_user_id == current_user.id).all())
+    return APIResponse(success=True, message="Provider enrollments retrieved successfully",
+                       data=[EnrollmentResponse.model_validate(e).model_dump() for e in enrollments])
 
 
 @router.get("/{program_id}", response_model=APIResponse)
@@ -100,6 +117,14 @@ def enroll_trainee(
     POST /api/v1/training/enroll
     Enrolls trainee into a training program.
     """
+    if current_user.role.value == "TRAINEE":
+        trainee = db.query(Trainee).filter(Trainee.trainee_id == payload.trainee_id, Trainee.user_id == current_user.id).first()
+        if not trainee:
+            raise HTTPException(status_code=403, detail="Cannot enroll another trainee")
+    if not db.query(TrainingProgram).filter(TrainingProgram.program_id == payload.program_id).first():
+        raise HTTPException(status_code=404, detail="Training program not found")
+    if db.query(TrainingEnrollment).filter_by(trainee_id=payload.trainee_id, program_id=payload.program_id).first():
+        raise HTTPException(status_code=400, detail="Already enrolled in this programme")
     enrollment = TrainingEnrollment(
         trainee_id=payload.trainee_id,
         program_id=payload.program_id,
@@ -114,6 +139,18 @@ def enroll_trainee(
         message="Enrollment successful",
         data=EnrollmentResponse.model_validate(enrollment).model_dump(),
     )
+
+
+@router.get("/enrollments/{trainee_id}", response_model=APIResponse)
+def get_training_enrollments(trainee_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    trainee = db.query(Trainee).filter(Trainee.trainee_id == trainee_id).first()
+    if not trainee:
+        raise HTTPException(status_code=404, detail="Trainee not found")
+    if current_user.role.value == "TRAINEE" and trainee.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Cannot access another trainee's enrollments")
+    enrollments = db.query(TrainingEnrollment).filter(TrainingEnrollment.trainee_id == trainee_id).all()
+    return APIResponse(success=True, message="Training enrollments retrieved successfully",
+                       data=[EnrollmentResponse.model_validate(item).model_dump() for item in enrollments])
 
 
 @router.put("/enrollment/{enrollment_id}", response_model=APIResponse)
@@ -137,6 +174,8 @@ def update_enrollment(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Enrollment not found",
         )
+    if current_user.role.value == "PROVIDER" and enrollment.program.provider_user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Cannot update another provider's enrollment")
 
     try:
         enrollment.status = EnrollmentStatus(payload.status.upper())
