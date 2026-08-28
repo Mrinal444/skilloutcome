@@ -1,14 +1,32 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
 
+/** Richer error that preserves the API envelope fields callers need to branch on. */
+export class ApiError extends Error {
+  constructor(message, { status = 0, errorCode = null, data = null } = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.errorCode = errorCode;
+    this.data = data;
+  }
+}
+
 async function parseResponse(response) {
-  const data = await response.json().catch(() => ({}));
+  const body = await response.json().catch(() => ({}));
   if (response.status === 401) {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     window.dispatchEvent(new Event("skilloutcome:unauthorized"));
   }
-  if (!response.ok) throw new Error(data.detail || data.message || "Something went wrong");
-  return data;
+  if (!response.ok) {
+    const message = body.detail || body.message || "Something went wrong";
+    throw new ApiError(message, {
+      status: response.status,
+      errorCode: body.error_code ?? null,
+      data: body.data ?? null,
+    });
+  }
+  return body;
 }
 
 export async function apiRequest(endpoint, options = {}) {
@@ -60,3 +78,8 @@ export const updateEmploymentRecord = (id, payload) => apiRequest(`/employment/$
 export const getMyTrainingPrograms = () => apiRequest("/training/mine");
 export const getMyProviderEnrollments = () => apiRequest("/training/mine/enrollments");
 export const updateEmployerVerification = (id, verification_status) => apiRequest(`/employers/${id}/verification`, { method: "PATCH", body: JSON.stringify({ verification_status }) });
+export const getTraineeSkillGap = (traineeId, targetJobRole) =>
+  apiRequest(`/trainees/${traineeId}/ml/skill-gap`, {
+    method: "POST",
+    body: JSON.stringify({ target_job_role: targetJobRole }),
+  });

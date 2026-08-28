@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Award, Briefcase, ClipboardList, Target, User } from "lucide-react";
+import { Award, Briefcase, ClipboardList, Target, TrendingDown, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Shell from "../common/Shell.jsx";
 import SectionTitle from "../common/SectionTitle.jsx";
 import StatusBadge from "../common/StatusBadge.jsx";
 import ProgressRing from "../common/ProgressRing.jsx";
+import SkillGapPanel from "./SkillGapPanel.jsx";
 import { T } from "../../theme.js";
 import { useAuth } from "../../auth/AuthContext.jsx";
 import {
@@ -19,6 +20,7 @@ const NAV = [
   { id: "employment", label: "Employment", icon: Briefcase },
   { id: "followups", label: "Follow-ups", icon: ClipboardList },
   { id: "progress", label: "Progress", icon: Award },
+  { id: "skill-gap", label: "Skill Gap", icon: TrendingDown },
 ];
 const LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
 const levelPercent = { BEGINNER: 33, INTERMEDIATE: 66, ADVANCED: 100 };
@@ -103,6 +105,7 @@ export default function TraineeDashboard() {
       {tab === "employment" && <div className="sk-card panel"><SectionTitle>Employment history</SectionTitle><SectionState state={employment} empty="No employment history yet." />{employment.items.map((item) => <div className="metric-row" key={item.employment_id}><span><b>{item.job_role}</b><small>Employer #{item.employer_id} · Joined {item.joining_date ? new Date(item.joining_date).toLocaleDateString() : "Not recorded"}</small></span><span>{item.salary} · <StatusBadge status={label(item.status)} /></span></div>)}</div>}
       {tab === "followups" && <div className="sk-card panel"><SectionTitle>Follow-up history</SectionTitle><SectionState state={followups} empty="No follow-ups recorded yet." />{followups.items.map((item) => <div className="metric-row" key={item.followup_id}><span><b>{label(item.follow_up_type)}</b><small>{item.feedback || "No remarks"}</small></span><span><StatusBadge status={label(item.status)} /><small>{item.created_at ? new Date(item.created_at).toLocaleDateString() : ""}</small></span></div>)}</div>}
       {tab === "progress" && <div className="sk-card panel"><ProgressRing value={progress} size={120} /><SectionTitle>Journey milestones</SectionTitle>{milestones.map(([name, done]) => <div className="metric-row" key={name}><span>{name}</span><StatusBadge status={done ? "Completed" : "Pending"} /></div>)}</div>}
+      {tab === "skill-gap" && <SkillGapPanel traineeId={profile?.trainee_id} skills={skills} />}
     </>}
   </Shell>;
 }
