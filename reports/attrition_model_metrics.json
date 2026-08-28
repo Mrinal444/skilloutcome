@@ -1,0 +1,149 @@
+{
+  "model_name": "attrition_model",
+  "target_description": "Termination before the 6-month retention milestone",
+  "selected_algorithm": "logistic_regression",
+  "selection_metric": "validation_average_precision",
+  "model_comparison": {
+    "logistic_regression": {
+      "roc_auc": 0.7219,
+      "average_precision": 0.1734,
+      "brier_score": 0.0599
+    },
+    "logistic_regression_balanced": {
+      "roc_auc": 0.7195,
+      "average_precision": 0.1715,
+      "brier_score": 0.2078
+    },
+    "random_forest": {
+      "roc_auc": 0.6986,
+      "average_precision": 0.1588,
+      "brier_score": 0.0606
+    },
+    "random_forest_balanced": {
+      "roc_auc": 0.7065,
+      "average_precision": 0.154,
+      "brier_score": 0.068
+    },
+    "xgboost": {
+      "roc_auc": 0.7095,
+      "average_precision": 0.1566,
+      "brier_score": 0.0607
+    },
+    "xgboost_weighted": {
+      "roc_auc": 0.7031,
+      "average_precision": 0.1475,
+      "brier_score": 0.1645
+    }
+  },
+  "calibration": {
+    "method": "sigmoid",
+    "fitted_on": "validation split",
+    "base_estimator_rows": 28542,
+    "calibration_rows": 5254,
+    "test_brier_before": 0.0576,
+    "test_brier_after": 0.0576,
+    "baseline_brier_at_test_positive_rate": 0.0602
+  },
+  "test_metrics": {
+    "threshold": 0.5,
+    "roc_auc": 0.7262,
+    "average_precision": 0.1573,
+    "positive_rate_baseline_average_precision": 0.0643,
+    "accuracy": 0.9357,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "brier_score": 0.0576,
+    "confusion_matrix": [
+      [
+        6680,
+        0
+      ],
+      [
+        459,
+        0
+      ]
+    ]
+  },
+  "split_strategy": "time_based",
+  "split_boundaries": {
+    "train_before": "2025-10-01",
+    "validation_before": "2026-01-01"
+  },
+  "split_rows": {
+    "train": 28542,
+    "validation": 5254,
+    "test": 7139
+  },
+  "split_positive_rates": {
+    "train": 0.0733,
+    "validation": 0.0676,
+    "test": 0.0643
+  },
+  "positive_rate": 0.071,
+  "threshold_selection_note": "Thresholds come from the calibration split, so validation-side recall is optimistic; the test metrics at the same thresholds are the unbiased read.",
+  "risk_thresholds": {
+    "medium": 0.0662,
+    "high": 0.1324,
+    "selection": "validation_f1"
+  },
+  "test_metrics_at_high_risk_threshold": {
+    "threshold": 0.1324,
+    "roc_auc": 0.7262,
+    "average_precision": 0.1573,
+    "positive_rate_baseline_average_precision": 0.0643,
+    "accuracy": 0.8879,
+    "precision": 0.1883,
+    "recall": 0.2244,
+    "f1": 0.2048,
+    "brier_score": 0.0576,
+    "confusion_matrix": [
+      [
+        6236,
+        444
+      ],
+      [
+        356,
+        103
+      ]
+    ]
+  },
+  "test_metrics_at_medium_risk_threshold": {
+    "threshold": 0.0662,
+    "roc_auc": 0.7262,
+    "average_precision": 0.1573,
+    "positive_rate_baseline_average_precision": 0.0643,
+    "accuracy": 0.7151,
+    "precision": 0.1259,
+    "recall": 0.5773,
+    "f1": 0.2067,
+    "brier_score": 0.0576,
+    "confusion_matrix": [
+      [
+        4840,
+        1840
+      ],
+      [
+        194,
+        265
+      ]
+    ]
+  },
+  "risk_band_distribution_test": {
+    "positive_label": "attrition",
+    "bands": {
+      "low": {
+        "rows": 5034,
+        "observed_attrition_rate": 0.0385
+      },
+      "medium": {
+        "rows": 1558,
+        "observed_attrition_rate": 0.104
+      },
+      "high": {
+        "rows": 547,
+        "observed_attrition_rate": 0.1883
+      }
+    }
+  }
+}

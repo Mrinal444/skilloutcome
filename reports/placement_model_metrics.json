@@ -1,0 +1,150 @@
+{
+  "model_name": "placement_model",
+  "target_description": "Placement after training completion",
+  "selected_algorithm": "logistic_regression",
+  "selection_metric": "validation_roc_auc",
+  "model_comparison": {
+    "logistic_regression": {
+      "roc_auc": 0.808,
+      "average_precision": 0.9597,
+      "brier_score": 0.0948
+    },
+    "logistic_regression_balanced": {
+      "roc_auc": 0.808,
+      "average_precision": 0.9597,
+      "brier_score": 0.1766
+    },
+    "random_forest": {
+      "roc_auc": 0.7984,
+      "average_precision": 0.9572,
+      "brier_score": 0.0965
+    },
+    "random_forest_balanced": {
+      "roc_auc": 0.7976,
+      "average_precision": 0.9572,
+      "brier_score": 0.1072
+    },
+    "xgboost": {
+      "roc_auc": 0.801,
+      "average_precision": 0.9588,
+      "brier_score": 0.0964
+    },
+    "xgboost_weighted": {
+      "roc_auc": 0.801,
+      "average_precision": 0.9588,
+      "brier_score": 0.0964
+    }
+  },
+  "calibration": {
+    "method": "isotonic",
+    "fitted_on": "validation split",
+    "base_estimator_rows": 33759,
+    "calibration_rows": 8539,
+    "test_brier_before": 0.099,
+    "test_brier_after": 0.0999,
+    "baseline_brier_at_test_positive_rate": 0.1233
+  },
+  "test_metrics": {
+    "threshold": 0.5,
+    "roc_auc": 0.8122,
+    "average_precision": 0.9552,
+    "positive_rate_baseline_average_precision": 0.856,
+    "accuracy": 0.8643,
+    "precision": 0.8693,
+    "recall": 0.9904,
+    "f1": 0.9259,
+    "brier_score": 0.0999,
+    "confusion_matrix": [
+      [
+        127,
+        982
+      ],
+      [
+        63,
+        6530
+      ]
+    ]
+  },
+  "split_strategy": "time_based",
+  "split_boundaries": {
+    "train_before": "2025-05-01",
+    "validation_before": "2025-09-01"
+  },
+  "split_rows": {
+    "train": 33759,
+    "validation": 8539,
+    "test": 7702
+  },
+  "split_positive_rates": {
+    "train": 0.8619,
+    "validation": 0.866,
+    "test": 0.856
+  },
+  "positive_rate": 0.8617,
+  "threshold_selection_note": "Thresholds come from the calibration split, so validation-side recall is optimistic; the test metrics at the same thresholds are the unbiased read.",
+  "support_thresholds": {
+    "high": 0.7667,
+    "medium": 0.8833,
+    "selection": "validation_f1_on_non_placement",
+    "interpretation": "placement probability at or below the cut raises the support priority"
+  },
+  "test_metrics_at_high_support_threshold": {
+    "threshold": 0.2333,
+    "roc_auc": 0.8122,
+    "average_precision": 0.4376,
+    "positive_rate_baseline_average_precision": 0.144,
+    "accuracy": 0.795,
+    "precision": 0.3724,
+    "recall": 0.6186,
+    "f1": 0.4649,
+    "brier_score": 0.0999,
+    "confusion_matrix": [
+      [
+        5437,
+        1156
+      ],
+      [
+        423,
+        686
+      ]
+    ]
+  },
+  "test_metrics_at_medium_support_threshold": {
+    "threshold": 0.1167,
+    "roc_auc": 0.8122,
+    "average_precision": 0.4376,
+    "positive_rate_baseline_average_precision": 0.144,
+    "accuracy": 0.6796,
+    "precision": 0.2824,
+    "recall": 0.7953,
+    "f1": 0.4168,
+    "brier_score": 0.0999,
+    "confusion_matrix": [
+      [
+        4352,
+        2241
+      ],
+      [
+        227,
+        882
+      ]
+    ]
+  },
+  "support_band_distribution_test": {
+    "positive_label": "non_placement",
+    "bands": {
+      "low": {
+        "rows": 4579,
+        "observed_non_placement_rate": 0.0496
+      },
+      "medium": {
+        "rows": 1281,
+        "observed_non_placement_rate": 0.153
+      },
+      "high": {
+        "rows": 1842,
+        "observed_non_placement_rate": 0.3724
+      }
+    }
+  }
+}

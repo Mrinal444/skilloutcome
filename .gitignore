@@ -1,14 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Python environments and caches
 venv/
 env/
 .venv/
+.pytest_cache/
 
-# Environment
+# Environment variables
 .env
+*.env
 
 # Database
 *.db
@@ -24,7 +33,7 @@ env/
 .DS_Store
 Thumbs.db
 
-# Distribution
+# Build artifacts
 dist/
 build/
 *.egg-info/
@@ -32,3 +41,10 @@ build/
 # Node.js
 node_modules/
 .vite/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Raw datasets
+data/raw/
