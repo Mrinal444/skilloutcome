@@ -2,8 +2,4 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
-data/raw/*.csv
-data/processed/*.csv
-models/*.joblib
-reports/*.json
-notebooks/*-executed.ipynb
+

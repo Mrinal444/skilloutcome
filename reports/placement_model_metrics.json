@@ -1,0 +1,75 @@
+{
+  "model_name": "placement_model",
+  "target_description": "Placement after training completion",
+  "selected_algorithm": "logistic_regression",
+  "selection_metric": "validation_roc_auc",
+  "model_comparison": {
+    "logistic_regression": {
+      "roc_auc": 0.808,
+      "average_precision": 0.9597,
+      "brier_score": 0.0948
+    },
+    "logistic_regression_balanced": {
+      "roc_auc": 0.808,
+      "average_precision": 0.9597,
+      "brier_score": 0.1766
+    },
+    "random_forest": {
+      "roc_auc": 0.7984,
+      "average_precision": 0.9572,
+      "brier_score": 0.0965
+    },
+    "random_forest_balanced": {
+      "roc_auc": 0.7981,
+      "average_precision": 0.9576,
+      "brier_score": 0.1073
+    },
+    "xgboost": {
+      "roc_auc": 0.8026,
+      "average_precision": 0.959,
+      "brier_score": 0.096
+    },
+    "xgboost_weighted": {
+      "roc_auc": 0.8026,
+      "average_precision": 0.959,
+      "brier_score": 0.096
+    }
+  },
+  "test_metrics": {
+    "threshold": 0.5,
+    "roc_auc": 0.8145,
+    "average_precision": 0.9596,
+    "positive_rate_baseline_average_precision": 0.856,
+    "accuracy": 0.8677,
+    "precision": 0.8797,
+    "recall": 0.9794,
+    "f1": 0.9269,
+    "brier_score": 0.0989,
+    "confusion_matrix": [
+      [
+        226,
+        883
+      ],
+      [
+        136,
+        6457
+      ]
+    ]
+  },
+  "split_strategy": "time_based",
+  "split_boundaries": {
+    "train_before": "2025-05-01",
+    "validation_before": "2025-09-01"
+  },
+  "split_rows": {
+    "train": 33759,
+    "validation": 8539,
+    "test": 7702
+  },
+  "split_positive_rates": {
+    "train": 0.8619,
+    "validation": 0.866,
+    "test": 0.856
+  },
+  "positive_rate": 0.8617
+}

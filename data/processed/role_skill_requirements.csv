@@ -1,0 +1,37 @@
+Target_Job_Role,Skill,Required_Proficiency,Importance_Weight,Effective_From,Data_Origin
+Account Executive,accounting,80,0.5,2024-01-01,synthetic_derived
+Account Executive,excel,70,0.3,2024-01-01,synthetic_derived
+Account Executive,communication,65,0.2,2024-01-01,synthetic_derived
+Cloud Associate,aws,80,0.4,2024-01-01,synthetic_derived
+Cloud Associate,azure,75,0.35,2024-01-01,synthetic_derived
+Cloud Associate,linux,70,0.25,2024-01-01,synthetic_derived
+Cybersecurity Associate,cybersecurity,80,0.5,2024-01-01,synthetic_derived
+Cybersecurity Associate,linux,70,0.3,2024-01-01,synthetic_derived
+Cybersecurity Associate,networking,70,0.2,2024-01-01,synthetic_derived
+Data Analyst,python,75,0.35,2024-01-01,synthetic_derived
+Data Analyst,sql,80,0.4,2024-01-01,synthetic_derived
+Data Analyst,power bi,70,0.25,2024-01-01,synthetic_derived
+Digital Marketing Executive,digital marketing,80,0.5,2024-01-01,synthetic_derived
+Digital Marketing Executive,communication,70,0.3,2024-01-01,synthetic_derived
+Digital Marketing Executive,excel,65,0.2,2024-01-01,synthetic_derived
+Graphic Designer,communication,70,0.4,2024-01-01,synthetic_derived
+Graphic Designer,digital marketing,65,0.35,2024-01-01,synthetic_derived
+Graphic Designer,excel,60,0.25,2024-01-01,synthetic_derived
+Healthcare Assistant,healthcare operations,80,0.5,2024-01-01,synthetic_derived
+Healthcare Assistant,communication,70,0.3,2024-01-01,synthetic_derived
+Healthcare Assistant,excel,60,0.2,2024-01-01,synthetic_derived
+Sales Executive,sales,80,0.5,2024-01-01,synthetic_derived
+Sales Executive,communication,75,0.35,2024-01-01,synthetic_derived
+Sales Executive,excel,60,0.15,2024-01-01,synthetic_derived
+Software Developer,python,75,0.35,2024-01-01,synthetic_derived
+Software Developer,java,75,0.35,2024-01-01,synthetic_derived
+Software Developer,sql,70,0.3,2024-01-01,synthetic_derived
+Support Engineer,networking,80,0.4,2024-01-01,synthetic_derived
+Support Engineer,linux,75,0.35,2024-01-01,synthetic_derived
+Support Engineer,communication,65,0.25,2024-01-01,synthetic_derived
+Technician,autocad,75,0.45,2024-01-01,synthetic_derived
+Technician,networking,65,0.3,2024-01-01,synthetic_derived
+Technician,excel,60,0.25,2024-01-01,synthetic_derived
+Web Developer,javascript,80,0.4,2024-01-01,synthetic_derived
+Web Developer,react,75,0.35,2024-01-01,synthetic_derived
+Web Developer,sql,65,0.25,2024-01-01,synthetic_derived

@@ -1,0 +1,127 @@
+{
+  "model_name": "attrition_model",
+  "target_description": "Termination before the 6-month retention milestone",
+  "selected_algorithm": "xgboost",
+  "selection_metric": "validation_average_precision",
+  "model_comparison": {
+    "logistic_regression": {
+      "roc_auc": 0.7219,
+      "average_precision": 0.1734,
+      "brier_score": 0.0599
+    },
+    "logistic_regression_balanced": {
+      "roc_auc": 0.7195,
+      "average_precision": 0.1715,
+      "brier_score": 0.2078
+    },
+    "random_forest": {
+      "roc_auc": 0.6986,
+      "average_precision": 0.1588,
+      "brier_score": 0.0606
+    },
+    "random_forest_balanced": {
+      "roc_auc": 0.7137,
+      "average_precision": 0.1581,
+      "brier_score": 0.0677
+    },
+    "xgboost": {
+      "roc_auc": 0.7148,
+      "average_precision": 0.1756,
+      "brier_score": 0.0601
+    },
+    "xgboost_weighted": {
+      "roc_auc": 0.7059,
+      "average_precision": 0.1565,
+      "brier_score": 0.1633
+    }
+  },
+  "test_metrics": {
+    "threshold": 0.5,
+    "roc_auc": 0.7148,
+    "average_precision": 0.1407,
+    "positive_rate_baseline_average_precision": 0.0643,
+    "accuracy": 0.9357,
+    "precision": 0.5,
+    "recall": 0.0044,
+    "f1": 0.0086,
+    "brier_score": 0.0583,
+    "confusion_matrix": [
+      [
+        6678,
+        2
+      ],
+      [
+        457,
+        2
+      ]
+    ]
+  },
+  "split_strategy": "time_based",
+  "split_boundaries": {
+    "train_before": "2025-10-01",
+    "validation_before": "2026-01-01"
+  },
+  "split_rows": {
+    "train": 28542,
+    "validation": 5254,
+    "test": 7139
+  },
+  "split_positive_rates": {
+    "train": 0.0733,
+    "validation": 0.0676,
+    "test": 0.0643
+  },
+  "positive_rate": 0.071,
+  "risk_thresholds": {
+    "medium": 0.0502,
+    "high": 0.1003,
+    "selection": "validation_f1"
+  },
+  "test_metrics_at_high_risk_threshold": {
+    "threshold": 0.1003,
+    "roc_auc": 0.7148,
+    "average_precision": 0.1407,
+    "positive_rate_baseline_average_precision": 0.0643,
+    "accuracy": 0.8087,
+    "precision": 0.1398,
+    "recall": 0.3834,
+    "f1": 0.2049,
+    "brier_score": 0.0583,
+    "confusion_matrix": [
+      [
+        5597,
+        1083
+      ],
+      [
+        283,
+        176
+      ]
+    ]
+  },
+  "test_metrics_at_medium_risk_threshold": {
+    "threshold": 0.0502,
+    "roc_auc": 0.7148,
+    "average_precision": 0.1407,
+    "positive_rate_baseline_average_precision": 0.0643,
+    "accuracy": 0.6302,
+    "precision": 0.1145,
+    "recall": 0.7059,
+    "f1": 0.1971,
+    "brier_score": 0.0583,
+    "confusion_matrix": [
+      [
+        4175,
+        2505
+      ],
+      [
+        135,
+        324
+      ]
+    ]
+  },
+  "risk_band_distribution_test": {
+    "low": 4310,
+    "medium": 1570,
+    "high": 1259
+  }
+}

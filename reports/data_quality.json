@@ -1,0 +1,61 @@
+{
+  "source": "/sessions/great-zen-sagan/mnt/Downloads/skillimpact_50000_master_dataset.csv",
+  "output_dir": "/sessions/great-zen-sagan/mnt/skilloutcome/data/processed",
+  "as_of_date": "2026-08-27",
+  "synthetic_derivation": true,
+  "rows": {
+    "trainees": 50000,
+    "training_completions": 50000,
+    "trainee_skills": 150000,
+    "role_skill_requirements": 36,
+    "skill_gap_details": 150000,
+    "job_demand_snapshots": 17664,
+    "job_search_events": 50000,
+    "employment_spells": 43085,
+    "salary_history": 81025,
+    "engagement_checkins": 164978,
+    "wage_progression_outcomes": 43085,
+    "placement_training_snapshot": 50000,
+    "attrition_training_snapshot": 40935
+  },
+  "unique_trainee_ids": 50000,
+  "required_source_columns": 36,
+  "labels": {
+    "placement_positive_rate": 0.8617,
+    "attrition_positive_rate": 0.071,
+    "attrition_label_definition": "Termination before the 6-month retention milestone, observed strictly after the snapshot checkpoint.",
+    "attrition_checkpoint_days": [
+      30,
+      60,
+      90,
+      120,
+      150
+    ],
+    "employment_spells_outside_risk_window": 2150
+  },
+  "snapshot_windows": {
+    "placement": [
+      "2024-01-01",
+      "2025-12-01"
+    ],
+    "attrition": [
+      "2024-02-14",
+      "2026-08-10"
+    ]
+  },
+  "feature_completeness": {
+    "attrition_engagement_missing_rate": 0.0,
+    "attrition_demand_missing_rate": 0.0,
+    "placement_demand_missing_rate": 0.0
+  },
+  "checks_passed": [
+    "unique trainee ids",
+    "referential integrity on Trainee_ID and Employment_ID",
+    "role weights sum to 1",
+    "non-negative skill deficits",
+    "no outcome columns in model views",
+    "attrition snapshots observed strictly before termination",
+    "all tables committed together"
+  ],
+  "note": "Dates, role requirements, demand, employment, salary, and engagement events are deterministic derivations because the source does not contain longitudinal records. Wage progression is published as an outcome table, never as a model feature."
+}
