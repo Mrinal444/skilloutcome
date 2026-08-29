@@ -72,7 +72,7 @@ def create_trainee(
 
 @router.get("", response_model=APIResponse)
 def get_all_trainees(
-    current_user: User = Depends(role_required("ADMIN")),
+    current_user: User = Depends(role_required("ADMIN", "EMPLOYER")),
     db: Session = Depends(get_db),
 ):
     """

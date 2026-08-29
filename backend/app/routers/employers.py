@@ -42,7 +42,11 @@ def create_employer(
 def get_my_employer(current_user: User = Depends(role_required("EMPLOYER")), db: Session = Depends(get_db)):
     employer = db.query(Employer).filter(Employer.user_id == current_user.id).first()
     if not employer:
-        raise HTTPException(status_code=404, detail="Employer profile not found")
+        return APIResponse(
+            success=True,
+            message="Employer profile not found",
+            data=None,
+        )
     return APIResponse(success=True, message="Employer profile retrieved successfully",
                        data=EmployerResponse.model_validate(employer).model_dump())
 

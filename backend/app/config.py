@@ -1,13 +1,17 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+DEFAULT_DATABASE_PATH = Path(__file__).resolve().parents[2] / "skilloutcome.db"
+DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
 
 
 class Settings:
     """Application settings loaded from environment variables."""
 
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./skilloutcome.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
     @property
     def is_sqlite(self) -> bool:
         return self.DATABASE_URL.startswith("sqlite")

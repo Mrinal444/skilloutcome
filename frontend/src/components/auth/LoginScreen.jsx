@@ -5,17 +5,41 @@ import AuthShell from "../common/AuthShell.jsx";
 import InputField from "../common/InputField.jsx";
 import { T } from "../../theme.js";
 import { useI18n } from "../../i18n.jsx";
+import { useAuth } from "../../auth/AuthContext.jsx";
 
 const roleNames={trainee:"Trainee",admin:"Government Admin",employer:"Employer",provider:"Training Provider"};
 const rolePaths={trainee:"/trainee",admin:"/admin",employer:"/employer",provider:"/provider"};
 
 export default function LoginScreen(){
   const nav=useNavigate();
+  const { login } = useAuth();
   const {role="trainee"}=useParams();
   const {t}=useI18n();
+  const [loading, setLoading] = useState(false);
   const [email,setEmail]=useState(""); const [pw,setPw]=useState(""); const [error,setError]=useState("");
   const roleName=roleNames[role]||roleNames.trainee;
-  const submit=e=>{e.preventDefault();if(!email||!pw){setError("Please enter email and password.");return;}setError("");nav(rolePaths[role]||"/role");};
+  const submit = async (e) => {
+  e.preventDefault();
+
+  if (!email || !pw) {
+    setError("Please enter email and password.");
+    return;
+  }
+
+  try {
+    setError("");
+    setLoading(true);
+
+    const account = await login(email.trim().toLowerCase(), pw);
+    const destination = rolePaths[account.role?.toLowerCase()] || "/role";
+    nav(destination);
+
+  } catch (err) {
+    setError(err.message || "Invalid email or password.");
+  } finally {
+    setLoading(false);
+  }
+};
   return <AuthShell tagline="Track outcomes. Bridge gaps. Transform lives.">
     <button type="button" className="back-link" onClick={()=>nav("/role")}><ArrowLeft size={14}/> {t.who}</button>
     <form onSubmit={submit}>
@@ -27,7 +51,7 @@ export default function LoginScreen(){
       <InputField icon={Lock} type="password" placeholder="Password" value={pw} onChange={e=>setPw(e.target.value)}/>
       <div style={{display:"flex",justifyContent:"flex-end",marginBottom:18}}><button type="button" className="text-button" onClick={()=>alert("Password reset link would be sent to your registered email.")}>{t.forgot}</button></div>
       {error&&<p className="form-error">{error}</p>}
-      <button type="submit" className="sk-btn-primary" style={{width:"100%",marginBottom:14}}>{t.signin}</button>
+      <button type="submit" className="sk-btn-primary" style={{width:"100%",marginBottom:14}} disabled={loading}>{t.signin}</button>
       <p style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{t.newHere} <button type="button" className="text-button" onClick={()=>nav(`/register/${role}`)}>{t.create}</button></p>
     </form>
   </AuthShell>;

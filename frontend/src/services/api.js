@@ -83,3 +83,7 @@ export const getTraineeSkillGap = (traineeId, targetJobRole) =>
     method: "POST",
     body: JSON.stringify({ target_job_role: targetJobRole }),
   });
+export const predictPlacement = (payload) =>
+  apiRequest("/ml/predict-placement", { method: "POST", body: JSON.stringify(payload) });
+export const predictAttrition = (payload) =>
+  apiRequest("/ml/predict-attrition", { method: "POST", body: JSON.stringify(payload) });

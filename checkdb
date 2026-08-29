@@ -1,0 +1,35 @@
+import sqlite3
+
+db_path = "skilloutcome.db"
+
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
+
+# Show all tables
+cursor.execute("""
+    SELECT name FROM sqlite_master
+    WHERE type='table'
+""")
+
+print("TABLES:")
+for row in cursor.fetchall():
+    print(row[0])
+
+# Show users if the table exists
+try:
+    cursor.execute("""
+        SELECT id, name, email, role
+        FROM users
+    """)
+
+    users = cursor.fetchall()
+
+    print("\nNUMBER OF USERS:", len(users))
+
+    for user in users:
+        print(user)
+
+except Exception as e:
+    print("\nERROR:", e)
+
+conn.close()

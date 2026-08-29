@@ -42,6 +42,12 @@ class MLServiceClient:
     async def skill_gap(self, payload: dict[str, Any]) -> dict[str, Any]:
         return await self._request("POST", "/skill-gap", json=payload)
 
+    async def predict_placement(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return await self._request("POST", "/predict-placement", json=payload)
+
+    async def predict_attrition(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return await self._request("POST", "/predict-attrition", json=payload)
+
     async def _request(
         self, method: str, path: str, *, json: dict[str, Any] | None = None
     ) -> dict[str, Any]:

@@ -5,13 +5,14 @@ import AuthShell from "../common/AuthShell.jsx";
 import InputField from "../common/InputField.jsx";
 import {T} from "../../theme.js";
 import {useI18n} from "../../i18n.jsx";
+import {registerUser} from "../../services/api.js";
 
 const roleNames={trainee:"Trainee",admin:"Government Admin",employer:"Employer",provider:"Training Provider"};
 export default function RegisterScreen(){
  const nav=useNavigate();const {role="trainee"}=useParams();const {t}=useI18n();
- const [form,setForm]=useState({name:"",email:"",pw:"",confirm:""});const [err,setErr]=useState("");
+ const [form,setForm]=useState({name:"",email:"",pw:"",confirm:""});const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
  const update=k=>e=>setForm({...form,[k]:e.target.value});
- const submit=e=>{e.preventDefault();if(!form.name||!form.email||!form.pw||!form.confirm){setErr("Please complete all fields.");return;}if(form.pw!==form.confirm){setErr("Passwords do not match.");return;}nav(`/login/${role}`)};
+ const submit=async e=>{e.preventDefault();if(!form.name||!form.email||!form.pw||!form.confirm){setErr("Please complete all fields.");return;}if(form.pw!==form.confirm){setErr("Passwords do not match.");return;}setErr("");setLoading(true);try{await registerUser({name:form.name,email:form.email.trim().toLowerCase(),password:form.pw,role});nav(`/login/${role}`);}catch(requestError){setErr(requestError.message||"Unable to create account.");}finally{setLoading(false);}};
  return <AuthShell tagline="Measure. Empower. Improve.">
   <button type="button" className="back-link" onClick={()=>nav(`/login/${role}`)}><ArrowLeft size={14}/> {t.signin}</button>
   <form onSubmit={submit}>
@@ -24,7 +25,7 @@ export default function RegisterScreen(){
    <InputField icon={Lock} type="password" placeholder="Password" value={form.pw} onChange={update("pw")}/>
    <InputField icon={Lock} type="password" placeholder="Confirm password" value={form.confirm} onChange={update("confirm")}/>
    {err&&<p className="form-error">{err}</p>}
-   <button className="sk-btn-primary" style={{width:"100%",margin:"10px 0 14px"}} type="submit">{t.registerTitle}</button>
+   <button className="sk-btn-primary" style={{width:"100%",margin:"10px 0 14px"}} type="submit" disabled={loading}>{t.registerTitle}</button>
   </form>
  </AuthShell>;
 }

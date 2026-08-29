@@ -11,7 +11,11 @@ from app.mappers.ml import MLFeaturesIncompleteError, build_skill_gap_payload
 from app.models.trainee import Trainee, TraineeSkill
 from app.models.user import User
 from app.schemas.common import APIResponse
-from app.schemas.ml import TraineeSkillGapRequest
+from app.schemas.ml import (
+    AttritionPredictionRequest,
+    PlacementPredictionRequest,
+    TraineeSkillGapRequest,
+)
 from app.services.ml_client import MLServiceClient, MLServiceError, get_ml_client
 
 router = APIRouter(tags=["ML"])
@@ -80,3 +84,31 @@ async def trainee_skill_gap(
     except MLServiceError as error:
         return _failure_response(error.status_code, error.error_code, error.message)
     return APIResponse(success=True, message="Skill-gap analysis completed successfully", data=result)
+
+
+@router.post("/ml/predict-placement", response_model=APIResponse)
+async def predict_placement(
+    payload: PlacementPredictionRequest,
+    _: User = Depends(role_required("ADMIN", "TRAINEE")),
+    client: MLServiceClient = Depends(get_ml_client),
+):
+    """Proxy placement prediction through the authenticated application API."""
+    try:
+        result = await client.predict_placement(payload.model_dump())
+    except MLServiceError as error:
+        return _failure_response(error.status_code, error.error_code, error.message)
+    return APIResponse(success=True, message="Placement prediction completed successfully", data=result)
+
+
+@router.post("/ml/predict-attrition", response_model=APIResponse)
+async def predict_attrition(
+    payload: AttritionPredictionRequest,
+    _: User = Depends(role_required("ADMIN", "EMPLOYER")),
+    client: MLServiceClient = Depends(get_ml_client),
+):
+    """Proxy attrition prediction through the authenticated application API."""
+    try:
+        result = await client.predict_attrition(payload.model_dump())
+    except MLServiceError as error:
+        return _failure_response(error.status_code, error.error_code, error.message)
+    return APIResponse(success=True, message="Attrition prediction completed successfully", data=result)
